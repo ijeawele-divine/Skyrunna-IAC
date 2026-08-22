@@ -1,0 +1,13 @@
+jwt_secret                   = "base64_encoded_min_48_bytes"
+encryption_key               = "base64_encoded_min_48_bytes"
+postgres_password            = "strong_password_here"
+super_admin_password_hash    = "bcrypt_hash_starting_with_2a_12"
+resilience_service_api_key   = "internal_service_key"
+notification_service_api_key = "internal_service_key"
+report_service_api_key       = "internal_service_key"
+sendgrid_api_key             = "SG.xxxx"
+flutterwave_secret_key       = "FLWSECK_xxxx"
+flutterwave_public_key       = "FLWPUBK_xxxx"
+flutterwave_encryption_key   = "xxxx"
+
+New password: 3Myy61fiil7OelQK
