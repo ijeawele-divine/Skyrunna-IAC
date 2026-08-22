@@ -445,7 +445,7 @@ module "dns" {
   source      = "../../modules/dns"
   env         = "uat"
   domain_name = "skyrunna.tech"
-  subdomain   = "uat"
+  subdomain   = ""
 
   alb_dns_name = module.alb.alb_dns_name
   alb_zone_id  = module.alb.alb_zone_id
