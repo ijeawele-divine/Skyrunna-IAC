@@ -23,18 +23,18 @@ module "ssm_secrets" {
   source = "../../modules/ssm-secrets"
   env    = "uat"
   secrets = {
-    JWT_SECRET                        = var.jwt_secret
-    ENCRYPTION_KEY                    = var.encryption_key
-    POSTGRES_PASSWORD                 = var.postgres_password
+    JWT_SECRET                         = var.jwt_secret
+    ENCRYPTION_KEY                     = var.encryption_key
+    POSTGRES_PASSWORD                  = var.postgres_password
     APP_SEED_SUPER_ADMIN_PASSWORD_HASH = var.super_admin_password_hash
-    RESILIENCE_SERVICE_API_KEY        = var.resilience_service_api_key
-    NOTIFICATION_SERVICE_API_KEY      = var.notification_service_api_key
-    REPORT_SERVICE_API_KEY            = var.report_service_api_key
-    SENDGRID_API_KEY                  = var.sendgrid_api_key
-    SPRING_MAIL_PASSWORD              = var.sendgrid_api_key
-    FLUTTERWAVE_SECRET_KEY            = var.flutterwave_secret_key
-    FLUTTERWAVE_PUBLIC_KEY            = var.flutterwave_public_key
-    FLUTTERWAVE_ENCRYPTION_KEY        = var.flutterwave_encryption_key
+    RESILIENCE_SERVICE_API_KEY         = var.resilience_service_api_key
+    NOTIFICATION_SERVICE_API_KEY       = var.notification_service_api_key
+    REPORT_SERVICE_API_KEY             = var.report_service_api_key
+    SENDGRID_API_KEY                   = var.sendgrid_api_key
+    SPRING_MAIL_PASSWORD               = var.sendgrid_api_key
+    FLUTTERWAVE_SECRET_KEY             = var.flutterwave_secret_key
+    FLUTTERWAVE_PUBLIC_KEY             = var.flutterwave_public_key
+    FLUTTERWAVE_ENCRYPTION_KEY         = var.flutterwave_encryption_key
   }
 }
 
@@ -76,39 +76,39 @@ module "alb" {
 }
 
 locals {
-  ecr_base    = "228228360738.dkr.ecr.eu-west-2.amazonaws.com"
-  region      = "eu-west-2"
-  namespace   = module.ecs_cluster.service_connect_namespace
-  rds_host    = split(":", module.rds.endpoint)[0]
-  rds_port    = split(":", module.rds.endpoint)[1]
+  ecr_base  = "228228360738.dkr.ecr.eu-west-2.amazonaws.com"
+  region    = "eu-west-2"
+  namespace = module.ecs_cluster.service_connect_namespace
+  rds_host  = split(":", module.rds.endpoint)[0]
+  rds_port  = split(":", module.rds.endpoint)[1]
 
   common_env = {
-    SPRING_PROFILES_ACTIVE              = "uat"
-    CONFIG_SERVER_URL                   = "http://config-server:8888"
-    LOG_PATH                            = "/logs"
-    KAFKA_BOOTSTRAP                     = "kafka:9092"
-    REDIS_HOST                          = module.redis.endpoint
-    REDIS_PORT                          = "6379"
-    PLATFORM_SCHEME                     = "http"
-    PLATFORM_WS_SCHEME                  = "ws"
-    USER_SERVICE_HOST                   = "user-service"
-    CLOUD_RESILIENCE_SERVICE_HOST       = "cloud-resilience-service"
-    REPORT_SERVICE_HOST                 = "report-service"
-    NOTIFICATION_SERVICE_HOST           = "notification-service"
-    FRONTEND_URL                        = "http://${module.alb.alb_dns_name}"
-    CORS_ALLOWED_ORIGINS                = "http://${module.alb.alb_dns_name}"
-    CORS_ALLOWED_METHODS                = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-    CORS_ALLOWED_HEADERS                = "Authorization,Content-Type,Accept,X-Requested-With,X-API-KEY"
-    CORS_EXPOSED_HEADERS                = "Authorization,Location,X-Total-Count"
-    CORS_ALLOW_CREDENTIALS              = "true"
-    SPRING_DATASOURCE_URL               = "jdbc:postgresql://${local.rds_host}:${local.rds_port}/${module.rds.db_name}"
-    SPRING_DATASOURCE_USERNAME          = module.rds.db_username
-    AZURE_OPENAI_ENDPOINT               = "https://replace-me.openai.azure.com/"
-    AZURE_OPENAI_DEPLOYMENT_NAME        = "resilience-recommender"
-    EMAIL_FROM_ADDRESS                  = "noreply@skyrunna.tech"
-    EMAIL_FROM_NAME                     = "Sky Runna"
-    EMAIL_SUPPORT_ADDRESS               = "support@skyrunna.com"
-    EMAIL_BRAND_APP_URL                 = "http://${module.alb.alb_dns_name}"
+    SPRING_PROFILES_ACTIVE        = "uat"
+    CONFIG_SERVER_URL             = "http://config-server:8888"
+    LOG_PATH                      = "/logs"
+    KAFKA_BOOTSTRAP               = "kafka:9092"
+    REDIS_HOST                    = module.redis.endpoint
+    REDIS_PORT                    = "6379"
+    PLATFORM_SCHEME               = "http"
+    PLATFORM_WS_SCHEME            = "ws"
+    USER_SERVICE_HOST             = "user-service"
+    CLOUD_RESILIENCE_SERVICE_HOST = "cloud-resilience-service"
+    REPORT_SERVICE_HOST           = "report-service"
+    NOTIFICATION_SERVICE_HOST     = "notification-service"
+    FRONTEND_URL                  = "http://${module.alb.alb_dns_name}"
+    CORS_ALLOWED_ORIGINS          = "http://${module.alb.alb_dns_name}"
+    CORS_ALLOWED_METHODS          = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    CORS_ALLOWED_HEADERS          = "Authorization,Content-Type,Accept,X-Requested-With,X-API-KEY"
+    CORS_EXPOSED_HEADERS          = "Authorization,Location,X-Total-Count"
+    CORS_ALLOW_CREDENTIALS        = "true"
+    SPRING_DATASOURCE_URL         = "jdbc:postgresql://${local.rds_host}:${local.rds_port}/${module.rds.db_name}"
+    SPRING_DATASOURCE_USERNAME    = module.rds.db_username
+    AZURE_OPENAI_ENDPOINT         = "https://replace-me.openai.azure.com/"
+    AZURE_OPENAI_DEPLOYMENT_NAME  = "resilience-recommender"
+    EMAIL_FROM_ADDRESS            = "noreply@skyrunna.tech"
+    EMAIL_FROM_NAME               = "Sky Runna"
+    EMAIL_SUPPORT_ADDRESS         = "support@skyrunna.com"
+    EMAIL_BRAND_APP_URL           = "http://${module.alb.alb_dns_name}"
   }
 
   common_secrets = {
@@ -151,8 +151,8 @@ module "zookeeper" {
   health_check_command = ["CMD-SHELL", "echo srvr | nc localhost 2181 | grep -q 'Zookeeper version' || exit 1"]
 
   environment_variables = {
-    ZOOKEEPER_CLIENT_PORT = "2181"
-    ZOOKEEPER_TICK_TIME   = "2000"
+    ZOOKEEPER_CLIENT_PORT            = "2181"
+    ZOOKEEPER_TICK_TIME              = "2000"
     ZOOKEEPER_4LW_COMMANDS_WHITELIST = "ruok,srvr,stat,mntr,conf,isro"
   }
 }
@@ -245,13 +245,13 @@ module "user_service" {
   service_connect_namespace = local.namespace
 
   environment_variables = merge(local.common_env, {
-    SERVER_PORT       = "8082"
-    USER_SERVICE_PORT = "8082"
-    LOGGING_LEVEL_ROOT = "DEBUG"
-    LOGGING_LEVEL_COM_SKY_GUARD = "DEBUG"
+    SERVER_PORT                                                            = "8082"
+    USER_SERVICE_PORT                                                      = "8082"
+    LOGGING_LEVEL_ROOT                                                     = "DEBUG"
+    LOGGING_LEVEL_COM_SKY_GUARD                                            = "DEBUG"
     LOGGING_LEVEL_COM_SKY_GUARD_USER_SERVICE_SERVICE_AUTHENTICATIONSERVICE = "DEBUG"
-    LOGGING_LEVEL_COM_SKY_GUARD_USER_SERVICE_CACHE_TOKENCACHE = "DEBUG"
-    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_DATA_REDIS = "DEBUG"
+    LOGGING_LEVEL_COM_SKY_GUARD_USER_SERVICE_CACHE_TOKENCACHE              = "DEBUG"
+    LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_DATA_REDIS                           = "DEBUG"
   })
 
   secrets = local.common_secrets
@@ -279,8 +279,8 @@ module "cloud_resilience_service" {
   service_connect_namespace = local.namespace
 
   environment_variables = merge(local.common_env, {
-    SERVER_PORT                    = "8083"
-    CLOUD_RESILIENCE_SERVICE_PORT  = "8083"
+    SERVER_PORT                   = "8083"
+    CLOUD_RESILIENCE_SERVICE_PORT = "8083"
     JAVA_OPTS                     = "-Dio.netty.handler.ssl.noOpenSsl=true"
   })
 
@@ -309,8 +309,8 @@ module "report_service" {
   service_connect_namespace = local.namespace
 
   environment_variables = merge(local.common_env, {
-    SERVER_PORT          = "8084"
-    REPORT_SERVICE_PORT  = "8084"
+    SERVER_PORT         = "8084"
+    REPORT_SERVICE_PORT = "8084"
   })
 
   secrets = local.common_secrets
@@ -338,8 +338,8 @@ module "notification_service" {
   service_connect_namespace = local.namespace
 
   environment_variables = merge(local.common_env, {
-    SERVER_PORT                  = "8085"
-    NOTIFICATION_SERVICE_PORT    = "8085"
+    SERVER_PORT                    = "8085"
+    NOTIFICATION_SERVICE_PORT      = "8085"
     management_health_mail_enabled = "false"
   })
 
@@ -370,8 +370,8 @@ module "api_gateway_service" {
   service_connect_namespace = local.namespace
 
   environment_variables = merge(local.common_env, {
-    SERVER_PORT              = "8081"
-    API_GATEWAY_SERVICE_PORT = "8081"
+    SERVER_PORT                                     = "8081"
+    API_GATEWAY_SERVICE_PORT                        = "8081"
     LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_CLOUD_GATEWAY = "DEBUG"
     LOGGING_LEVEL_REACTOR_NETTY                     = "DEBUG"
     LOGGING_LEVEL_ROOT                              = "DEBUG"
@@ -439,6 +439,11 @@ module "monitoring" {
     "kafka",
     "zookeeper"
   ]
+}
+
+module "cdn_assets" {
+  source = "../../modules/cdn-assets"
+  env    = "uat"
 }
 
 module "dns" {

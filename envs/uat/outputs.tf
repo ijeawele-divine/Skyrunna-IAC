@@ -18,3 +18,8 @@ output "role_arn" {
 output "dashboard_url" {
   value = module.monitoring.dashboard_url
 }
+
+output "cdn_domain_name" {
+  description = "CloudFront domain for static/marketing assets (e.g. demo video)"
+  value       = module.cdn_assets.distribution_domain_name
+}
