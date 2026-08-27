@@ -1,0 +1,118 @@
+name: Terraform UAT
+
+on:
+  pull_request:
+    paths:
+      - 'envs/uat/**'
+      - 'modules/**'
+      - '.github/workflows/terraform-uat.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'envs/uat/**'
+      - 'modules/**'
+      - '.github/workflows/terraform-uat.yml'
+  workflow_dispatch:
+    inputs:
+      allow_destroy:
+        description: 'Allow resource deletions (use with care)'
+        required: false
+        default: 'false'
+
+env:
+  AWS_REGION: eu-west-2
+  TF_WORKING_DIR: envs/uat
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.TF_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.15.6
+          terraform_wrapper: false
+
+      - name: Terraform fmt check
+        run: terraform fmt -check -recursive
+        continue-on-error: true
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Write tfvars from secret
+        run: echo "${{ secrets.TFVARS_UAT }}" > terraform.tfvars
+
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -out=tfplan -no-color
+
+      - name: Check for destructive changes
+        id: destroy_check
+        run: |
+          terraform show -json tfplan > plan.json
+
+          DELETIONS=$(python3 -c "
+          import json
+          with open('plan.json') as f:
+              plan = json.load(f)
+          deletions = []
+          for r in plan.get('resource_changes', []):
+              actions = r['change']['actions']
+              # Pure delete only - replacements are ['delete','create'] or ['create','delete']
+              if actions == ['delete']:
+                  deletions.append(r['address'])
+          print('\n'.join(deletions))
+          ")
+
+          if [ -n "$DELETIONS" ]; then
+            echo "has_deletions=true" >> $GITHUB_OUTPUT
+            echo "::warning::Plan contains resource deletions:"
+            echo "$DELETIONS"
+            echo "$DELETIONS" > deletions.txt
+          else
+            echo "has_deletions=false" >> $GITHUB_OUTPUT
+            echo "No pure deletions detected."
+          fi
+
+      - name: Fail on deletions
+        if: steps.destroy_check.outputs.has_deletions == 'true' && github.event.inputs.allow_destroy != 'true'
+        run: |
+          echo "This plan would DELETE the following resources:"
+          cat deletions.txt
+          echo ""
+          echo "Blocked. If intentional, re-run via workflow_dispatch with allow_destroy=true."
+          exit 1
+
+      - name: Show plan summary
+        run: terraform show -no-color tfplan
+
+      - name: Terraform apply
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: terraform apply -auto-approve tfplan
+
+      - name: Clean up tfvars
+        if: always()
+        run: rm -f terraform.tfvars plan.json
