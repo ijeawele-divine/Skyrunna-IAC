@@ -23,3 +23,7 @@ output "cdn_domain_name" {
   description = "CloudFront domain for static/marketing assets (e.g. demo video)"
   value       = module.cdn_assets.distribution_domain_name
 }
+
+output "terraform_role_arn" {
+  value = module.github_oidc.terraform_role_arn
+}

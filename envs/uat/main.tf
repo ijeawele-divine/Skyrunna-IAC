@@ -412,7 +412,8 @@ module "github_oidc" {
   github_org = "vincentainatech"
   github_repos = [
     "Skyrunna-Backend",
-    "Skyrunna-Frontend"
+    "Skyrunna-Frontend",
+    "Skyrunna-IaaC"
   ]
 }
 
